@@ -703,5 +703,21 @@
     "https://deno.land/x/yargs_parser@v20.2.4-deno/build/lib/yargs-parser-types.d.ts": "434deb76c6632b3b6cbc4c6f153f8aca04e06055ae9c6b24b40218cbc42688d9",
     "https://deno.land/x/yargs_parser@v20.2.4-deno/build/lib/yargs-parser.js": "453200a7dfbb002e605d8009b7dad30f2b1d93665e046ab89c073a4fe63dfd48",
     "https://deno.land/x/yargs_parser@v20.2.4-deno/deno.ts": "ad53c0c82c3982c4fc5be9472384b259e0a32ce1f7ae0f68de7b2445df5642fc"
+  },
+  "npm": {
+    "specifiers": {
+      "@types/lodash": "@types/lodash@4.14.191",
+      "lodash": "lodash@4.17.21"
+    },
+    "packages": {
+      "@types/lodash@4.14.191": {
+        "integrity": "sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==",
+        "dependencies": {}
+      },
+      "lodash@4.17.21": {
+        "integrity": "sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==",
+        "dependencies": {}
+      }
+    }
   }
 }

@@ -1,9 +1,10 @@
+// @deno-types="npm:@types/lodash"
 import _ from 'lodash';
 import { readRelativeInput } from '@/common/file.js';
 
-const readInput = (fileName) => readRelativeInput(import.meta.url, fileName);
+const readInput = (fileName: string) => readRelativeInput(import.meta.url, fileName);
 
-export const solve = (input) => {
+export const solve = (input: string) => {
   console.log(input);
   return 'answer';
 };

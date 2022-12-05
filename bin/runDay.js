@@ -11,6 +11,6 @@ await runCommand(
     '--allow-read',
     '--import-map=import_map.json',
     argv.watch ? '--watch' : null,
-    `src/days/${argv.day}/index.js`,
+    `src/days/${argv.day}/index.ts`,
   ]),
 );

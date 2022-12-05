@@ -2,7 +2,7 @@
   "imports": {
     "@/": "./src/",
     "./": "./",
-    "lodash": "https://deno.land/x/lodash@4.17.15-es/lodash.js",
+    "lodash": "npm:lodash",
     "yargs": "https://deno.land/x/yargs/deno.ts"
   }
 }
