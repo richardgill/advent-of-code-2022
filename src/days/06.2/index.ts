@@ -4,7 +4,7 @@ import { readRelativeInput } from '@/common/file.js';
 
 const readInput = (fileName: string) => readRelativeInput(import.meta.url, fileName);
 
-const LOOK_BACK = 4;
+const LOOK_BACK = 14;
 
 const isUniqueBetween = (str: string, start: number, end: number) => {
   const subStr = str.slice(start, end);
