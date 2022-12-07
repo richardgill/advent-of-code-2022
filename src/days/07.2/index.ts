@@ -71,7 +71,15 @@ const calculateTotals = (directories: {
 export const solve = (input: string) => {
   const commands = parseInput(input);
   const directories = calculateTotals(runCommands(commands));
-  return _.chain(directories).filter((d) => d.totalSize < 100000).map((d) => d.totalSize).sum().value();
+  console.log(_.orderBy(directories, (d) => d.dir));
+  const usedSpace = _.last(directories)?.totalSize || 0;
+  const freeSpace = 70000000 - usedSpace;
+  const needToFree = 30000000 - freeSpace;
+  console.log('usedSpace', usedSpace);
+  console.log('freeSpace', freeSpace);
+  console.log('needToFree', needToFree);
+  console.log(_.chain(directories).filter((d) => d.totalSize >= needToFree).orderBy((d) => d.totalSize, 'asc').value());
+  return _.chain(directories).filter((d) => d.totalSize >= needToFree).orderBy((d) => d.totalSize, 'asc').first().value();
 };
 
 console.log(solve(readInput('example1.txt')), '\n\n\n');
