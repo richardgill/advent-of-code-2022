@@ -1,19 +1,6 @@
 // @deno-types="npm:@types/lodash"
 import _ from 'lodash';
 import { readRelativeInput } from '@/common/file.js';
-/*
-parses input like:
-
-R 4
-U 4
-L 3
-D 1
-R 4
-D 1
-L 5
-R 2
-
-*/
 
 const parseInput = (input: string) => {
   return input.trim().split('\n').map((l) => {
@@ -30,9 +17,15 @@ const readInput = (fileName: string) => readRelativeInput(import.meta.url, fileN
 type Move = { direction: string; distance: number };
 type Coordinate = { x: number; y: number };
 
-const printGrid = (grid: string[][], headPosition: Coordinate, tailPosition: Coordinate) => {
+const printGrid = (grid: string[][], headPosition: Coordinate, tailPositions: Coordinate[]) => {
   const gridCopy = grid.map((l) => l.slice());
-  gridCopy[tailPosition.y][tailPosition.x] = 'T';
+  for (let i = 0; i < tailPositions.length; i++) {
+    const tailPosition = tailPositions[i];
+    if (['#', '.'].includes(gridCopy[tailPosition.y][tailPosition.x])) {
+      gridCopy[tailPosition.y][tailPosition.x] = `${i + 1}`;
+    }
+  }
+
   gridCopy[headPosition.y][headPosition.x] = 'H';
   console.log(gridCopy.map((l) => l.join('')).join('\n'));
   console.log('\n');
@@ -79,7 +72,18 @@ const calculateTailPosition = (headPosition: Coordinate, tailPosition: Coordinat
   return tailPosition;
 };
 
-const do1Move = (grid: string[][], direction: string, headPosition: Coordinate, tailPosition: Coordinate) => {
+const calculateTailPositions = (headPosition: Coordinate, tailPositions: Coordinate[]): Coordinate[] => {
+  let head = headPosition;
+  for (const tailPosition of tailPositions) {
+    const newTailPosition = calculateTailPosition(head, tailPosition);
+    tailPosition.x = newTailPosition.x;
+    tailPosition.y = newTailPosition.y;
+    head = tailPosition;
+  }
+  return tailPositions;
+};
+
+const do1Move = (grid: string[][], direction: string, headPosition: Coordinate, tailPositions: Coordinate[]) => {
   switch (direction) {
     case 'R':
       headPosition.x += 1;
@@ -94,37 +98,42 @@ const do1Move = (grid: string[][], direction: string, headPosition: Coordinate, 
       headPosition.y += 1;
       break;
   }
-  const newTailPosition = calculateTailPosition(headPosition, tailPosition);
-  tailPosition.x = newTailPosition.x;
-  tailPosition.y = newTailPosition.y;
-  grid[newTailPosition.y][newTailPosition.x] = '#';
-  printGrid(grid, headPosition, tailPosition);
+  const newTailPositions = calculateTailPositions(headPosition, tailPositions);
+  const lastTailPosition = _.last(newTailPositions);
+  if (!lastTailPosition) {
+    throw new Error('no tail position');
+  }
+  grid[lastTailPosition.y][lastTailPosition.x] = '#';
+  printGrid(grid, headPosition, newTailPositions);
 };
 
-const doMove = (grid: string[][], move: Move, headPosition: Coordinate, tailPosition: Coordinate) => {
+const doMove = (grid: string[][], move: Move, headPosition: Coordinate, tailPositions: Coordinate[]) => {
   const { direction, distance } = move;
 
   for (let i = 0; i < distance; i++) {
-    do1Move(grid, direction, headPosition, tailPosition);
+    do1Move(grid, direction, headPosition, tailPositions);
   }
 };
 
-export const solve = (input: string, gridSize: number, customStartCoordX?: number, customStartCoordY?: number) => {
+export const solve = (input: string, gridWidth: number, gridHeight: number, customStartCoordX?: number, customStartCoordY?: number) => {
   console.log('---------solve--------');
-  const grid = Array(gridSize).fill('.').map(() => Array(gridSize).fill('.'));
+  const grid = Array(gridHeight).fill('.').map(() => Array(gridWidth).fill('.'));
   const moves = parseInput(input);
-  const startCoord = Math.floor(gridSize / 2);
-  const headPosition = { x: customStartCoordX ?? startCoord, y: customStartCoordY ?? startCoord };
-  const tailPosition = { x: customStartCoordX ?? startCoord, y: customStartCoordY ?? startCoord };
+  const startCoord = { x: Math.floor(gridWidth / 2), y: Math.floor(gridHeight / 2) };
+  const headPosition = !_.isNil(customStartCoordX) && !_.isNil(customStartCoordY)
+    ? { x: customStartCoordX, y: customStartCoordY }
+    : startCoord;
+  const tailPosition = { ...headPosition };
+  const tails = _.range(0, 9).map(() => ({ ...tailPosition }));
+  console.log('tails', tails.length);
   for (const move of moves) {
     console.log(move);
-    doMove(grid, move, headPosition, tailPosition);
+    doMove(grid, move, headPosition, tails);
   }
-
   return _.chain(grid).flatten().filter((c) => c === '#').value().length;
 };
 
-console.log(solve(readInput('example1.txt'), 5, 0, 4), '\n\n\n');
+console.log(solve(readInput('example1.txt'), 6, 6, 0, 4), '\n\n\n');
 
-// console.log(solve(readInput('example2.txt')), '\n\n\n');
-console.log(solve(readInput('puzzleInput.txt'), 9999), '\n\n\n');
+console.log(solve(readInput('example2.txt'), 30, 25, 12, 25 - 7), '\n\n\n');
+console.log(solve(readInput('puzzleInput.txt'), 9999, 9999), '\n\n\n');
