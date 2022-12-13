@@ -5,22 +5,20 @@ import { readRelativeInput } from '@/common/file.js';
 const readInput = (fileName: string) => readRelativeInput(import.meta.url, fileName);
 
 const parseInput = (input: string) => {
-  return input.trim().split('\n\n').map((l) => l.split('\n').map((l) => JSON.parse(l)));
+  return input.trim().split('\n\n').map((l) => l.trim().split('\n').map((l) => JSON.parse(l.trim()))).flat();
 };
 
-type PacketArray = number | Array<number | PacketArray>;
+type PacketArray = number | Array<number | PacketArray> | undefined;
 
 type Result = 'correctOrder' | 'wrongOrder' | 'unknown';
 
 const isCorrectOrder = (left: PacketArray, right: PacketArray): Result => {
-  // console.log('isCorrectOrder', left, right);
   if (_.isArray(left) && _.isArray(right)) {
     if (_.isEmpty(left) && _.isEmpty(right)) {
       return 'unknown';
     }
     const leftHead = _.first(left);
     const rightHead = _.first(right);
-    // console.log(`Compare ${JSON.stringify(leftHead)} vs ${JSON.stringify(rightHead)}`);
     if (_.isNil(leftHead) && !_.isNil(rightHead)) {
       return 'correctOrder';
     }
@@ -28,7 +26,6 @@ const isCorrectOrder = (left: PacketArray, right: PacketArray): Result => {
       return 'wrongOrder';
     }
     if (_.isNumber(leftHead) && _.isNumber(rightHead)) {
-      // console.log(`  Compare ${leftHead} vs ${rightHead}`);
       if (leftHead < rightHead) {
         return 'correctOrder';
       }
@@ -37,9 +34,6 @@ const isCorrectOrder = (left: PacketArray, right: PacketArray): Result => {
       }
       return isCorrectOrder(_.tail(left), _.tail(right));
     }
-    // if (_.isEmpty(leftHead) && _.isEmpty(rightHead)) {
-    //   return isCorrectOrder(_.tail(left), _.tail(right));
-    // }
     const res = isCorrectOrder(leftHead, rightHead);
     if (['correctOrder', 'wrongOrder'].includes(res)) {
       return res;
@@ -61,15 +55,20 @@ const isCorrectOrder = (left: PacketArray, right: PacketArray): Result => {
 };
 
 export const solve = (input: string) => {
-  const lines = parseInput(input);
-  const orders = lines.map(([left, right]) => {
+  console.log(`${input}\n[[2]]\n[[6]]`);
+  const lines = parseInput(`${input}\n\n[[2]]\n[[6]]`);
+  lines.sort((left, right) => {
     const res = isCorrectOrder(left, right);
-    return res;
-  }).map((res, index) => (res === 'correctOrder' ? index + 1 : null));
-  console.log(orders);
-  return _.chain(orders).compact().sum().value();
+    return res === 'correctOrder' ? -1 : 1;
+  });
+
+  console.log(lines);
+  const index1 = lines.findIndex((line) => _.isEqual(line, [[2]])) + 1;
+  const index2 = lines.findIndex((line) => _.isEqual(line, [[6]])) + 1;
+  console.log(index1, index2);
+  return (index1 * index2);
 };
 
 console.log(solve(readInput('example1.txt')), '\n\n\n');
-console.log(solve(readInput('broken2.txt')), '\n\n\n');
+// console.log(solve(readInput('broken2.txt')), '\n\n\n');
 console.log(solve(readInput('puzzleInput.txt')), '\n\n\n');
