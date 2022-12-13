@@ -8,7 +8,7 @@ const parseInput = (input: string) => {
   return input.trim().split('\n\n').map((l) => l.split('\n').map((l) => JSON.parse(l)));
 };
 
-type PacketArray = number | Array<number | PacketArray>;
+type PacketArray = number | Array<number | PacketArray> | undefined;
 
 type Result = 'correctOrder' | 'wrongOrder' | 'unknown';
 
